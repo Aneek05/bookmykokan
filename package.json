@@ -29,13 +29,12 @@
     "postcss-loader": "^7.3.4",
     "tailwindcss": "^3.4.17"
   },
-  "scripts": {
-    "preinstall": "npm install --legacy-peer-deps",
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
+"scripts": {
+  "start": "react-scripts start",
+  "build": "react-scripts build",
+  "test": "react-scripts test",
+  "eject": "react-scripts eject"
+}
   "eslintConfig": {
     "extends": [
       "react-app",
