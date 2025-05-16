@@ -10,6 +10,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.8.4",
     "color-thief-browser": "^2.0.2",
+    "framer-motion": "^12.11.4",
     "i18next": "^23.5.0",
     "i18next-browser-languagedetector": "^8.0.4",
     "lucide-react": "^0.487.0",
@@ -28,7 +29,10 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": ["react-app", "react-app/jest"]
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
   },
   "browserslist": {
     "production": [
