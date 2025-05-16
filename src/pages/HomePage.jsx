@@ -92,9 +92,6 @@ export default function HomePage() {
             </button>
           </div>
 
-          {/* Animated Side Images */}
-          <motion.img src={sideImages[0]} alt="left" className="absolute left-0 bottom-10 w-40" animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 4 }} />
-          <motion.img src={sideImages[1]} alt="right" className="absolute right-0 bottom-10 w-40" animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 4, delay: 1 }} />
 
 {/* Search Box */}
           {activeTab === 'homestays' && (
@@ -241,17 +238,17 @@ export default function HomePage() {
     <h2 className="text-3xl font-bold text-gray-800 mb-6">Why Book With <span className="text-orange-600">BookMyKonkan?</span></h2>
     <div className="grid md:grid-cols-3 gap-6 text-left mt-10">
       <div className="bg-white shadow rounded-lg p-6">
-        <img src="/icons/verified.png" alt="Verified" className="w-40 h-100 mb-4" />
+        <img src="/icons/verified.png" alt="Verified" className="w-40 h-100 rounded-full object-cover mb-4" />
         <h4 className="font-bold text-lg text-gray-800 mb-2">Verified Villas & Homestays</h4>
         <p className="text-gray-600">Only trusted hosts listed, reviewed for cleanliness and comfort.</p>
       </div>
       <div className="bg-white shadow rounded-lg p-6">
-        <img src="/icons/deliver.png" alt="Deliver" className="w-40 h-100 mb-4" />
+        <img src="/icons/deliver.png" alt="Deliver" className="w-40 h-100 rounded-full object-cover mb-4" />
         <h4 className="font-bold text-lg text-gray-800 mb-2">Local Delicacies Delivered</h4>
         <p className="text-gray-600">Get authentic Konkan masalas, pickles and mangoes to your doorstep.</p>
       </div>
       <div className="bg-white shadow rounded-lg p-6">
-        <img src="/icons/support.png" alt="Support" className="w-40 h-100 mb-4" />
+        <img src="/icons/support.png" alt="Support" className="w-40 h-100 rounded-full object-cover mb-4" />
         <h4 className="font-bold text-lg text-gray-800 mb-2">Fast Booking & Support</h4>
         <p className="text-gray-600">Smart filters, real-time booking and help when you need it most.</p>
       </div>
@@ -259,9 +256,6 @@ export default function HomePage() {
   </div>
 </section>
 
-          {/* Animated Side Images */}
-          <motion.img src={sideImages[2]} alt="left" className="absolute left-0 bottom-10 w-40" animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 4 }} />
-          <motion.img src={sideImages[3]} alt="right" className="absolute right-0 bottom-10 w-40" animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 4, delay: 1 }} />
 
 {/* Offers & Deals Section */}
 <section className="bg-white py-16 px-4">
@@ -271,7 +265,7 @@ export default function HomePage() {
     <div className="grid md:grid-cols-2 gap-8">
       {/* Offer 1 - Limited time */}
       <div className="bg-white rounded-lg shadow-md p-4 flex">
-        <img src="/offers/earlybird.jpg" alt="Early Bird" className="w-28 h-24 rounded object-cover mr-4" />
+        <img src="/offers/earlybird.jpg" alt="Early Bird" className="w-28 h-24 rounded-full object-cover mr-4" />
         <div className="flex flex-col justify-between">
           <div>
             <h4 className="text-lg font-bold text-gray-800">Early Bird Offer</h4>
@@ -283,7 +277,7 @@ export default function HomePage() {
 
       {/* Offer 2 - Festival deal */}
       <div className="bg-white rounded-lg shadow-md p-4 flex">
-        <img src="/offers/festival.jpg" alt="Festival Offer" className="w-28 h-24 rounded object-cover mr-4" />
+        <img src="/offers/festival.jpg" alt="Festival Offer" className="w-28 h-24 rounded-full object-cover mr-4" />
         <div className="flex flex-col justify-between">
           <div>
             <h4 className="text-lg font-bold text-gray-800">Festive Spice Sale</h4>
@@ -295,7 +289,7 @@ export default function HomePage() {
 
       {/* Offer 3 - Summer code */}
       <div className="bg-white rounded-lg shadow-md p-4 flex">
-        <img src="/offers/summerdeal.jpg" alt="Summer Deal" className="w-28 h-24 rounded object-cover mr-4" />
+        <img src="/offers/summerdeal.jpg" alt="Summer Deal" className="w-28 h-24 rounded-full object-cover mr-4" />
         <div className="flex flex-col justify-between">
           <div>
             <h4 className="text-lg font-bold text-gray-800">Summer Special</h4>
@@ -307,7 +301,7 @@ export default function HomePage() {
 
       {/* Offer 4 - Konkan combo */}
       <div className="bg-white rounded-lg shadow-md p-4 flex">
-        <img src="/offers/combo.jpg" alt="Konkan Combo" className="w-28 h-24 rounded object-cover mr-4" />
+        <img src="/offers/combo.jpg" alt="Konkan Combo" className="w-28 h-24 rounded-full object-cover mr-4" />
         <div className="flex flex-col justify-between">
           <div>
             <h4 className="text-lg font-bold text-gray-800">Stay + Delights Combo</h4>
@@ -326,17 +320,17 @@ export default function HomePage() {
     <h2 className="text-3xl font-bold text-gray-800 mb-10">How It Works</h2>
     <div className="grid md:grid-cols-3 gap-6">
       <div className="flex flex-col items-center">
-        <img src="/icons/search.png" alt="Search" className="w-40 h-40 mb-4" />
+        <img src="/icons/search.png" alt="Search" className="w-40 h-40 rounded-full object-cover mb-4" />
         <h4 className="font-semibold text-lg mb-2">Search & Discover</h4>
         <p className="text-sm text-gray-600">Find villas and local products tailored to your trip.</p>
       </div>
       <div className="flex flex-col items-center">
-        <img src="/icons/book.png" alt="Book" className="w-40 h-40 mb-4" />
+        <img src="/icons/book.png" alt="Book" className="w-40 h-40 rounded-full object-cover mb-4" />
         <h4 className="font-semibold text-lg mb-2">Instant Booking</h4>
         <p className="text-sm text-gray-600">Book verified stays or order Konkan goodies online.</p>
       </div>
       <div className="flex flex-col items-center">
-        <img src="/icons/enjoy.png" alt="Enjoy" className="w-40 h-40 mb-4" />
+        <img src="/icons/enjoy.png" alt="Enjoy" className="w-40 h-40 rounded-full object-cover mb-4" />
         <h4 className="font-semibold text-lg mb-2">Enjoy Your Stay</h4>
         <p className="text-sm text-gray-600">Experience the rich culture, food and vibes of Konkan.</p>
       </div>
