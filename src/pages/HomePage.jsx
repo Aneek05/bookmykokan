@@ -222,11 +222,15 @@ export default function HomePage() {
                   </div>
                 </div>
               </div>
-              <div className="text-center mt-6">
-                <button className="bg-orange-500 text-white px-6 py-2 rounded-full font-semibold">
-                  {('Expore More Products')}
-                </button>
-              </div>
+<div className="text-center mt-6">
+  <Link
+    to="/explore-products"
+    className="bg-orange-500 text-white px-6 py-2 rounded-full font-semibold hover:bg-orange-600 transition"
+  >
+    Explore More Products
+  </Link>
+</div>
+
             </div>
           )}
         </div>

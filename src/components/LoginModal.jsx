@@ -1,62 +1,75 @@
-// LoginModal.jsx
+// LoginModal.jsx — Enhanced with rotating image banners, Google login buttons, email OTP placeholders
 import React, { useState, useEffect, useRef } from 'react';
 import { FaTimes, FaCheckCircle } from 'react-icons/fa';
-import ColorThief from 'color-thief-browser';
 
-export default function LoginModal({ onClose }) {
+const personalImages = ['/login/personal1.jpg', '/login/personal2.jpg', '/login/personal3.jpg', '/login/personal4.jpg'];
+const partnerImages = ['/login/partner1.jpg', '/login/partner2.jpg', '/login/partner3.jpg'];
+
+export default function LoginModal({ onClose, onLogin }) {
   const [tab, setTab] = useState('personal');
-  const [dominantColor, setDominantColor] = useState('#ffe8c6');
-  const imgRef = useRef(null);
+  const [imageIndex, setImageIndex] = useState(0);
+  const [email, setEmail] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState('');
+
+  const currentImages = tab === 'personal' ? personalImages : partnerImages;
 
   useEffect(() => {
-    const image = new Image();
-    image.crossOrigin = 'Anonymous';
-    image.src = '/hero.jpg';
-    image.onload = () => {
-      const colorThief = new ColorThief();
-      const color = colorThief.getColor(image);
-      setDominantColor(`rgb(${color[0]}, ${color[1]}, ${color[2]})`);
-    };
-  }, []);
+    const interval = setInterval(() => {
+      setImageIndex(prev => (prev + 1) % currentImages.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [tab]);
+
+  const handleSendOtp = () => {
+    if (email) {
+      setOtpSent(true);
+    }
+  };
+
+  const handleVerifyOtp = () => {
+    if (otp.length === 6) {
+      onLogin();
+      onClose();
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center">
       <div className="bg-white rounded-lg shadow-lg w-full max-w-4xl flex overflow-hidden relative">
-
-        {/* Left Panel with Benefits */}
-        <div
-          className="w-1/2 p-6 text-black hidden md:flex flex-col justify-center"
-          style={{ backgroundColor: dominantColor }}
-        >
-          {tab === 'personal' ? (
-            <div>
-              <h2 className="text-xl font-bold mb-4">Why Sign Up?</h2>
-              <ul className="space-y-3 text-sm">
-                <li className="flex items-center gap-2"><FaCheckCircle className="text-green-600" /> Real-time order & pickup tracking</li>
-                <li className="flex items-center gap-2"><FaCheckCircle className="text-green-600" /> Exclusive deals on Kokan delicacies</li>
-                <li className="flex items-center gap-2"><FaCheckCircle className="text-green-600" /> Access past orders & reorders</li>
-                <li className="flex items-center gap-2"><FaCheckCircle className="text-green-600" /> Notifications on new items & offers</li>
-              </ul>
-            </div>
-          ) : (
-            <div>
-              <h2 className="text-xl font-bold mb-4">Benefits for Partners</h2>
-              <ul className="space-y-3 text-sm">
-                <li className="flex items-center gap-2"><FaCheckCircle className="text-blue-600" /> List villas or sell Kokan products</li>
-                <li className="flex items-center gap-2"><FaCheckCircle className="text-blue-600" /> Manage orders from dashboard</li>
-                <li className="flex items-center gap-2"><FaCheckCircle className="text-blue-600" /> Get real-time customer location</li>
-                <li className="flex items-center gap-2"><FaCheckCircle className="text-blue-600" /> Track payments & payouts easily</li>
-              </ul>
-            </div>
-          )}
+        {/* Left Banner Section */}
+        <div className="w-1/2 relative hidden md:block">
+          <img
+            src={currentImages[imageIndex]}
+            alt="Slide"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black bg-opacity-40 text-white p-6 flex flex-col justify-center">
+            {tab === 'personal' ? (
+              <>
+                <h2 className="text-xl font-bold mb-4">Why Sign Up?</h2>
+                <ul className="space-y-3 text-sm">
+                  <li className="flex items-center gap-2"><FaCheckCircle className="text-green-400" /> Track orders & delivery</li>
+                  <li className="flex items-center gap-2"><FaCheckCircle className="text-green-400" /> Get member-only discounts</li>
+                  <li className="flex items-center gap-2"><FaCheckCircle className="text-green-400" /> View past bookings</li>
+                </ul>
+              </>
+            ) : (
+              <>
+                <h2 className="text-xl font-bold mb-4">Partner Benefits</h2>
+                <ul className="space-y-3 text-sm">
+                  <li className="flex items-center gap-2"><FaCheckCircle className="text-blue-400" /> List products & manage orders</li>
+                  <li className="flex items-center gap-2"><FaCheckCircle className="text-blue-400" /> Export sales & revenue reports</li>
+                  <li className="flex items-center gap-2"><FaCheckCircle className="text-blue-400" /> Dedicated partner support</li>
+                </ul>
+              </>
+            )}
+          </div>
         </div>
 
-        {/* Right Panel with Form */}
+        {/* Right Form Section */}
         <div className="w-full md:w-1/2 p-6 relative">
-          <button
-            onClick={onClose}
-            className="absolute top-2 right-2 text-gray-500 hover:text-black"
-          >
+          <button onClick={onClose} className="absolute top-2 right-2 text-gray-500 hover:text-black">
             <FaTimes size={22} />
           </button>
 
@@ -72,39 +85,41 @@ export default function LoginModal({ onClose }) {
               onClick={() => setTab('partner')}
               className={`w-1/2 py-2 text-sm font-semibold ${tab === 'partner' ? 'bg-orange-500 text-white' : 'bg-white text-black'}`}
             >
-              Partner Login
+              Partner Account
             </button>
           </div>
 
-          {tab === 'personal' ? (
+          <label className="block mb-2 font-medium">Email Address</label>
+          <input
+            type="email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            placeholder="Enter your email"
+            className="w-full border rounded px-3 py-2 mb-4"
+          />
+
+          {otpSent ? (
             <>
-              <label className="block mb-2 font-medium">Mobile Number</label>
-              <div className="flex items-center border rounded px-2 py-1">
-                <span className="mr-2">🇮🇳 +91</span>
-                <input type="tel" placeholder="Enter Mobile Number" className="w-full outline-none" />
-              </div>
-              <button className="w-full mt-4 bg-gray-300 text-white py-2 rounded cursor-not-allowed">Continue</button>
-              <p className="text-center text-sm text-gray-500 mt-4">or Login/Signup With</p>
-              <div className="flex justify-center gap-4 mt-2">
-                <button className="bg-white border rounded-full w-10 h-10 flex items-center justify-center text-lg">G</button>
-                <button className="bg-white border rounded-full w-10 h-10 flex items-center justify-center text-lg">✉️</button>
-              </div>
+              <label className="block mb-2 font-medium">Enter OTP</label>
+              <input
+                type="text"
+                value={otp}
+                onChange={e => setOtp(e.target.value)}
+                maxLength={6}
+                placeholder="Enter 6-digit OTP"
+                className="w-full border rounded px-3 py-2 mb-4"
+              />
+              <button onClick={handleVerifyOtp} className="w-full bg-green-600 text-white py-2 rounded font-semibold hover:bg-green-700 transition">Verify & Continue</button>
             </>
           ) : (
-            <>
-              <h3 className="text-lg font-semibold mb-2">Login with Work Email</h3>
-              <input
-                type="email"
-                placeholder="Enter your work email"
-                className="w-full border rounded px-3 py-2"
-              />
-              <button className="w-full mt-4 bg-gray-300 text-white py-2 rounded cursor-not-allowed">Continue</button>
-              <p className="text-center text-sm text-gray-500 mt-4">or use your business account with</p>
-              <div className="flex justify-center mt-2">
-                <button className="bg-white border rounded-full w-10 h-10 flex items-center justify-center text-lg">G</button>
-              </div>
-            </>
+            <button onClick={handleSendOtp} className="w-full bg-blue-600 text-white py-2 rounded font-semibold hover:bg-blue-700 transition">Send OTP</button>
           )}
+
+          <p className="text-center text-sm text-gray-500 mt-4">or Login with</p>
+          <div className="flex justify-center gap-4 mt-2">
+            <button className="bg-white border rounded-full w-10 h-10 flex items-center justify-center text-lg">G</button>
+            {tab === 'personal' && <button className="bg-white border rounded-full w-10 h-10 flex items-center justify-center text-lg">✉️</button>}
+          </div>
         </div>
       </div>
     </div>
