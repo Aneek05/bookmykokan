@@ -1,17 +1,27 @@
-// LoginModal.jsx — Enhanced with rotating image banners, Google login buttons, email OTP placeholders
-import React, { useState, useEffect, useRef } from 'react';
+// LoginModal.jsx — Updated with Firebase partner login
+import React, { useState, useEffect } from 'react';
 import { FaTimes, FaCheckCircle } from 'react-icons/fa';
+import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailLink, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailAndPassword } from 'firebase/auth';
+import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
+import { app } from '../firebase';
+import { Link } from 'react-router-dom';
+import { useUser } from '../context/UserContext';
 
-const personalImages = ['/login/personal1.jpg', '/login/personal2.jpg', '/login/personal3.jpg', '/login/personal4.jpg'];
+const personalImages = ['/login/personal1.jpg', '/login/personal2.jpg', '/login/personal3.jpg'];
 const partnerImages = ['/login/partner1.jpg', '/login/partner2.jpg', '/login/partner3.jpg'];
 
-export default function LoginModal({ onClose, onLogin }) {
+export default function LoginModal({ onClose }) {
   const [tab, setTab] = useState('personal');
   const [imageIndex, setImageIndex] = useState(0);
   const [email, setEmail] = useState('');
   const [otpSent, setOtpSent] = useState(false);
-  const [otp, setOtp] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
+  const { setUser } = useUser();
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const provider = new GoogleAuthProvider();
   const currentImages = tab === 'personal' ? personalImages : partnerImages;
 
   useEffect(() => {
@@ -21,29 +31,70 @@ export default function LoginModal({ onClose, onLogin }) {
     return () => clearInterval(interval);
   }, [tab]);
 
-  const handleSendOtp = () => {
-    if (email) {
-      setOtpSent(true);
+  useEffect(() => {
+    if (isSignInWithEmailLink(auth, window.location.href)) {
+      let storedEmail = window.localStorage.getItem('emailForSignIn');
+      if (!storedEmail) storedEmail = window.prompt('Please provide your email for confirmation');
+      signInWithEmailLink(auth, storedEmail, window.location.href)
+        .then(async result => {
+          window.localStorage.removeItem('emailForSignIn');
+          await setDoc(doc(db, 'users', result.user.uid), {
+            name: result.user.displayName || '',
+            email: result.user.email,
+            role: 'customer'
+          });
+          setUser(result.user);
+          onClose();
+        })
+        .catch(console.error);
     }
+  }, []);
+
+  const handleSendOtp = () => {
+    const actionCodeSettings = { url: window.location.href, handleCodeInApp: true };
+    sendSignInLinkToEmail(auth, email, actionCodeSettings)
+      .then(() => {
+        window.localStorage.setItem('emailForSignIn', email);
+        setOtpSent(true);
+      })
+      .catch(console.error);
   };
 
-  const handleVerifyOtp = () => {
-    if (otp.length === 6) {
-      onLogin();
-      onClose();
-    }
+  const handleGoogleLogin = () => {
+    signInWithPopup(auth, provider)
+      .then(async result => {
+        await setDoc(doc(db, 'users', result.user.uid), {
+          name: result.user.displayName || '',
+          email: result.user.email,
+          role: 'customer'
+        });
+        setUser(result.user);
+        onClose();
+      })
+      .catch(console.error);
+  };
+
+  const handlePartnerLogin = () => {
+    signInWithEmailAndPassword(auth, username, password)
+      .then(async result => {
+        const userDoc = await getDoc(doc(db, 'users', result.user.uid));
+        if (userDoc.exists() && userDoc.data().role === 'partner') {
+          setUser(result.user);
+          onClose();
+        } else {
+          alert('Access denied. Not a partner.');
+        }
+      })
+      .catch(() => {
+        alert('Invalid credentials');
+      });
   };
 
   return (
     <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center">
       <div className="bg-white rounded-lg shadow-lg w-full max-w-4xl flex overflow-hidden relative">
-        {/* Left Banner Section */}
         <div className="w-1/2 relative hidden md:block">
-          <img
-            src={currentImages[imageIndex]}
-            alt="Slide"
-            className="w-full h-full object-cover"
-          />
+          <img src={currentImages[imageIndex]} alt="Slide" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-black bg-opacity-40 text-white p-6 flex flex-col justify-center">
             {tab === 'personal' ? (
               <>
@@ -67,59 +118,43 @@ export default function LoginModal({ onClose, onLogin }) {
           </div>
         </div>
 
-        {/* Right Form Section */}
         <div className="w-full md:w-1/2 p-6 relative">
           <button onClick={onClose} className="absolute top-2 right-2 text-gray-500 hover:text-black">
             <FaTimes size={22} />
           </button>
 
-          {/* Tabs */}
           <div className="flex mb-4 border rounded-full overflow-hidden">
-            <button
-              onClick={() => setTab('personal')}
-              className={`w-1/2 py-2 text-sm font-semibold ${tab === 'personal' ? 'bg-blue-600 text-white' : 'bg-white text-black'}`}
-            >
-              Personal Account
-            </button>
-            <button
-              onClick={() => setTab('partner')}
-              className={`w-1/2 py-2 text-sm font-semibold ${tab === 'partner' ? 'bg-orange-500 text-white' : 'bg-white text-black'}`}
-            >
-              Partner Account
-            </button>
+            <button onClick={() => setTab('personal')} className={`w-1/2 py-2 text-sm font-semibold ${tab === 'personal' ? 'bg-blue-600 text-white' : 'bg-white text-black'}`}>Personal Account</button>
+            <button onClick={() => setTab('partner')} className={`w-1/2 py-2 text-sm font-semibold ${tab === 'partner' ? 'bg-orange-500 text-white' : 'bg-white text-black'}`}>Partner Account</button>
           </div>
 
-          <label className="block mb-2 font-medium">Email Address</label>
-          <input
-            type="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            placeholder="Enter your email"
-            className="w-full border rounded px-3 py-2 mb-4"
-          />
-
-          {otpSent ? (
+          {tab === 'personal' ? (
             <>
-              <label className="block mb-2 font-medium">Enter OTP</label>
-              <input
-                type="text"
-                value={otp}
-                onChange={e => setOtp(e.target.value)}
-                maxLength={6}
-                placeholder="Enter 6-digit OTP"
-                className="w-full border rounded px-3 py-2 mb-4"
-              />
-              <button onClick={handleVerifyOtp} className="w-full bg-green-600 text-white py-2 rounded font-semibold hover:bg-green-700 transition">Verify & Continue</button>
+              <label className="block mb-2 font-medium">Email Address</label>
+              <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Enter your email" className="w-full border rounded px-3 py-2 mb-4" />
+              {!otpSent ? (
+                <button onClick={handleSendOtp} className="w-full bg-blue-600 text-white py-2 rounded font-semibold hover:bg-blue-700 transition">Send OTP</button>
+              ) : (
+                <div className="text-green-600 font-medium text-center">OTP sent! Check your email and click the link to log in.</div>
+              )}
+              <p className="text-center text-sm text-gray-500 mt-4">or Login with</p>
+              <div className="flex justify-center gap-4 mt-2">
+                <button onClick={handleGoogleLogin} className="bg-white border rounded-full w-10 h-10 flex items-center justify-center text-lg">G</button>
+              </div>
             </>
           ) : (
-            <button onClick={handleSendOtp} className="w-full bg-blue-600 text-white py-2 rounded font-semibold hover:bg-blue-700 transition">Send OTP</button>
+            <>
+              <label className="block mb-2 font-medium">Username or Work Email</label>
+              <input type="text" value={username} onChange={e => setUsername(e.target.value)} className="w-full border rounded px-3 py-2 mb-4" />
+              <label className="block mb-2 font-medium">Password</label>
+              <input type="password" value={password} onChange={e => setPassword(e.target.value)} className="w-full border rounded px-3 py-2 mb-4" />
+              <button onClick={handlePartnerLogin} className="w-full bg-orange-500 text-white py-2 rounded font-semibold hover:bg-orange-600 transition">Login</button>
+              <p className="text-center text-sm text-gray-500 mt-4">
+                Don’t have an account?{' '}
+                <Link to="/partner-signup" className="text-blue-600 font-semibold underline">Click here to sign up</Link>
+              </p>
+            </>
           )}
-
-          <p className="text-center text-sm text-gray-500 mt-4">or Login with</p>
-          <div className="flex justify-center gap-4 mt-2">
-            <button className="bg-white border rounded-full w-10 h-10 flex items-center justify-center text-lg">G</button>
-            {tab === 'personal' && <button className="bg-white border rounded-full w-10 h-10 flex items-center justify-center text-lg">✉️</button>}
-          </div>
         </div>
       </div>
     </div>

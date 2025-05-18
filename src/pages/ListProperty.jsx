@@ -103,7 +103,7 @@ export default function ListProperty() {
       <section className="bg-white py-10 text-center">
         <h3 className="text-xl font-bold mb-4">Ready to Partner With Us?</h3>
         <p className="text-gray-600 mb-6 max-w-xl mx-auto">Click below to create your partner account. You’ll receive an email with the agreement link and further onboarding steps.</p>
-        <a href="/signup" className="inline-block bg-orange-600 hover:bg-orange-700 text-white font-semibold px-6 py-3 rounded-full transition">
+        <a href="/partner-signup" className="inline-block bg-orange-600 hover:bg-orange-700 text-white font-semibold px-6 py-3 rounded-full transition">
           Create Partner Account
         </a>
       </section>
